@@ -140,6 +140,7 @@ Looking ahead to version 1.0, the idea for **Noetiq** is to include the followin
 - [ ] UI improvements.
 - [ ] Note sorting and search options.
 - [ ] Automatic app block after inactivity.
+- [ ] Keyboard shortcuts for faster navigation and editing
 - [ ] General quality-of-life improvements.
 - [ ] macOS support.
 - [ ] Mobile support.
