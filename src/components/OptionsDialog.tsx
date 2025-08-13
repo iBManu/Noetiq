@@ -53,7 +53,7 @@ const OptionsDialog: React.FC = () => {
       </div>
       
       <p className="dialog-input-label">About</p>
-      <p className="dialog-about-text"><strong>Version: </strong>Beta 0.1</p>
+      <p className="dialog-about-text"><strong>Version: </strong>Beta 0.1.1</p>
       <p className="dialog-about-text"><strong>Developer: </strong>iBManu</p>
       <p className="dialog-about-text"><strong>License: </strong>GNU GPL (v3)</p>
     </div>
