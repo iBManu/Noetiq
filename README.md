@@ -2,14 +2,16 @@
 
 <h3 align="center"> Multi-platform encrypted note-taking app with block-style editor </h3>
 
-<div style="display: flex; gap: 10px; margin-bottom: 10px; justify-content: center;">
-  <img src="editor-light.png" alt="Noetiq editor - light theme" width="45%">
-  <img src="editor-dark.png" alt="Noetiq editor - dark theme" width="45%">
-</div>
-
-<div style="display: flex; gap: 10px; justify-content: center;">
-  <img src="vaultgrid-light.png" alt="Noetiq vaultgrid - light theme" width="45%">
-  <img src="vaultgrid-dark.png" alt="Noetiq vaultgrid - dark theme" width="45%">
+<div align="center">
+  <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+    <img src="editor-light.png" alt="Noetiq editor - light theme" width="48%">
+    <img src="editor-dark.png" alt="Noetiq editor - dark theme" width="48%">
+  </div>
+  
+  <div style="display: flex; gap: 10px;">
+    <img src="vaultgrid-light.png" alt="Noetiq vaultgrid - light theme" width="48%">
+    <img src="vaultgrid-dark.png" alt="Noetiq vaultgrid - dark theme" width="48%">
+  </div>
 </div>
 
 > [!IMPORTANT]
