@@ -7,7 +7,7 @@ import { Header } from "./types";
 import CustomDialog from "./CustomDialog";
 import OptionsDialog from "./OptionsDialog";
 import NoteOptionsDialog from "./NoteOptionsDialog";
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from "@tauri-apps/api/core";
 import { usePassword } from "./PasswordContext";
 import { NoteItem } from "./interfaces";
 
@@ -30,6 +30,7 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
   const [currentNoteEditData, setCurrentNoteEditData] = useState<string>("");
 
   const editorRef = useRef<EditorHandle | null>(null);
+  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const emojiList = [
     "😀", "😎", "🤓", "🥳", "🤯", "😇", "😈", "😴", "😭", "😅",
@@ -45,8 +46,7 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
 
   function getRandomEmoji() {
     return emojiList[Math.floor(Math.random() * emojiList.length)];
-  }14
-
+  }
 
   function openOptions() {
     setIsOptionsModalOpen(true);
@@ -64,7 +64,7 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
 
   async function loadNotes() {
     try {
-      const decryptedIndexJson = await invoke<string>('get_notes_index', {
+      const decryptedIndexJson = await invoke<string>("get_notes_index", {
         password,
         vaultfolder: id,
       });
@@ -72,15 +72,43 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
       setNotes(updatedNotes);
       return updatedNotes;
     } catch (err) {
-      console.error('Error loading notes:', err);
+      console.error("Error loading notes:", err);
       return [];
     }
   }
 
+  const saveNote = async (dataOverride: any = null) => {
+    if (!selectedNote || !editorRef.current) return;
+
+    try {
+      const savedData = dataOverride || (await editorRef.current.save());
+
+      await invoke("save_note_data", {
+        password,
+        vaultfolder: id,
+        filename: selectedNote,
+        content: JSON.stringify(savedData),
+      });
+    } catch (error) {
+      console.error("Error saving note:", error);
+    }
+  };
+
+  const switchNote = async (newNote: string) => {
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current);
+      saveTimeout.current = null;
+    }
+
+    await saveNote();
+    setSelectedNote(newNote);
+  };
+
   async function onNewNote() {
     try {
-      const newEmoji = getRandomEmoji();
+      await saveNote();
 
+      const newEmoji = getRandomEmoji();
       await invoke("create_note", {
         password,
         vaultfolder: id,
@@ -91,9 +119,8 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
 
       if (updatedNotes.length > 0) {
         const lastNote = updatedNotes[updatedNotes.length - 1];
-        setSelectedNote(lastNote.filename || lastNote);
+        await switchNote(lastNote.filename || lastNote);
       }
-
     } catch (err) {
       console.error("Error creating note:", err);
     }
@@ -106,13 +133,15 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
       vaultfolder: id,
       filename: selectedNote,
       newTitle,
-    }).then(() => {
-      loadNotes();
-    }).catch(err => console.error("Error updating note title:", err));
+    })
+      .then(() => {
+        loadNotes();
+      })
+      .catch((err) => console.error("Error updating note title:", err));
   };
 
   function getCurrentNoteItem(): NoteItem | undefined {
-    return notes.find(note => note.filename === selectedNote);
+    return notes.find((note) => note.filename === selectedNote);
   }
 
   useEffect(() => {
@@ -134,11 +163,10 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
           vaultfolder: id,
           filename: selectedNote,
         });
-        saveNote(data);
         const parsed = JSON.parse(encryptedData);
         setData(parsed);
         const date: string = await getNoteEditDate(id, selectedNote);
-        setCurrentNoteEditData(date)
+        setCurrentNoteEditData(date);
         setLoadedNote(selectedNote);
       } catch (err) {
         console.error("Error loading note:", err);
@@ -148,28 +176,8 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
     loadNoteData();
   }, [selectedNote, id, password]);
 
-  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  const saveNote = async (dataOverride = null) => {
-    if (!selectedNote || !editorRef.current) return;
-
-    try {
-      const savedData = dataOverride || await editorRef.current.save();
-
-      await invoke("save_note_data", {
-        password,
-        vaultfolder: id,
-        filename: selectedNote,
-        content: JSON.stringify(savedData),
-      });
-    } catch (error) {
-      console.error("Error saving note:", error);
-    }
-  };
-
-  // Should change the any type to a proper interface
+  // autosave al escribir
   const handleEditorChange = (data: any) => {
-
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
 
     saveTimeout.current = setTimeout(() => {
@@ -177,20 +185,23 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
     }, 2000);
   };
 
-  const getNoteEditDate = async (vault: string, filename: string): Promise<string> => {
+  const getNoteEditDate = async (
+    vault: string,
+    filename: string
+  ): Promise<string> => {
     return await invoke<string>("get_note_edit_date", {
       vaultfolder: vault,
-      filename: filename
+      filename: filename,
     });
-  };  
+  };
 
   const handleCloseNoteOptionsDialog = () => {
     setIsNoteOptionsModalOpen(false);
-  }
+  };
 
   const handleOpenNoteOptionsDialog = () => {
     setIsNoteOptionsModalOpen(true);
-  }
+  };
 
   return (
     <div className="App">
@@ -206,7 +217,7 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
       <NotesBar
         noteList={notes}
         vaultName={name}
-        setSelectedNote={setSelectedNote}
+        setSelectedNote={switchNote}
         selectedNote={selectedNote}
         handleOpenNoteOptionsDialog={handleOpenNoteOptionsDialog}
       />
@@ -246,10 +257,18 @@ const VaultOpen: React.FC<Props> = ({ path, name, id, onVaultClose }) => {
         <OptionsDialog />
       </CustomDialog>
 
-      <CustomDialog isOpen={isNoteOptionsModalOpen} onClose={() => setIsNoteOptionsModalOpen(false)}>
-        <NoteOptionsDialog id={selectedNote} vaultFolder={path} refreshNotes={loadNotes} handleCloseDialog={handleCloseNoteOptionsDialog} setSelectedNote={setSelectedNote} />
+      <CustomDialog
+        isOpen={isNoteOptionsModalOpen}
+        onClose={() => setIsNoteOptionsModalOpen(false)}
+      >
+        <NoteOptionsDialog
+          id={selectedNote}
+          vaultFolder={path}
+          refreshNotes={loadNotes}
+          handleCloseDialog={handleCloseNoteOptionsDialog}
+          setSelectedNote={setSelectedNote}
+        />
       </CustomDialog>
-
     </div>
   );
 };

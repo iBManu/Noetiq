@@ -38,6 +38,7 @@
     "@tauri-apps/plugin-dialog": "^2.3.0",
     "@tauri-apps/plugin-fs": "^2.4.0",
     "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-shell": "^2.3.0",
     "editorjs-alert": "^1.1.4",
     "editorjs-annotation": "^1.1.0",
     "editorjs-header-with-alignment": "^1.0.1",

@@ -5,7 +5,7 @@
   "identifier": "com.ibmanu.noetiq",
   "build": {
     "beforeDevCommand": "npm run dev",
-    "devUrl": "http://localhost:5900",
+    "devUrl": "http://localhost:6200",
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },

@@ -315,7 +315,7 @@ body {
   width: 40px;
   min-width: 40px;
   height: 100vh;
-  border: 1px solid var(--sidebar-border);
+  border-right: 1px solid var(--sidebar-border);
   background-color: var(--sidebar-bg);
   color: var(--secondary-text-color);
 }
@@ -427,7 +427,11 @@ body {
 .index-header-6 { padding-left: 1.5rem; }
 
 #editor-container {
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  overflow-y: auto;
+  height: 100%;
 }
 
 .editor {
@@ -506,7 +510,9 @@ body {
   border-bottom: 1px solid var(--sidebar-border);
   display: flex;
   align-items: center;
-  
+  position: sticky;
+  top: 0;
+  z-index: 999; 
 }
 
 #title-container-icon {
@@ -673,7 +679,7 @@ button {
 }
 
 .swap-button-container {
-  margin-top: 1rem;
+  margin-left: 0.5rem;
 }
 
 .swap-button {
@@ -718,7 +724,7 @@ button {
   align-self: flex-start;
   margin: 0;
   margin-left: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   margin-top: 1rem;
   font-size: 0.8rem;
 }
@@ -768,6 +774,7 @@ button {
   font-size: 1rem;
   cursor: pointer;
   user-select: none;
+  margin-left: 0.5rem;
 }
 
 .dialog-button-neutral:hover {
@@ -835,6 +842,66 @@ button {
   box-shadow: 0 0 0 2px var(--button-red-shadow-focus);
 }
 
+/*#flavour-list {
+  width: 100%;
+  display: flex;
+  margin-left: 0.5rem;
+}
+
+.flavour {
+  height: 20px;
+  width: 20px;
+  margin-right: 0.5rem;
+  border-radius: 100%;
+  cursor: pointer;
+  border: 2px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flavour:hover {
+  border: 2px solid var(--terciary-text-color);
+  transition: 0.1s;
+}
+
+.flavour-bg {
+  height: 16px;
+  width: 16px;
+  border-radius: 100%;
+}
+
+#flavour-bg-blue {
+  background-color: #1E90FF;
+}
+
+#flavour-bg-yellow {
+  background-color: #FFD700;
+}
+
+#flavour-bg-purple {
+  background-color: #9B30FF;
+}
+
+#flavour-bg-red {
+  background-color: #FF4500;
+}
+
+#flavour-bg-pink {
+  background-color: #FF69B4;
+}
+
+#flavour-bg-green {
+  background-color: #32CD32;
+}
+
+#flavour-bg-orange {
+  background-color: #FFA500;
+}
+
+#flavour-bg-gray {
+  background-color: #A9A9A9;
+}*/
 
 #openvault-container {
   width: 400px;

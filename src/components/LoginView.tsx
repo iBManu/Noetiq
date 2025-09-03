@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { usePassword } from "./PasswordContext";
+import { invoke } from "@tauri-apps/api/core";
 
 interface LoginViewProps {
     hint: string,
@@ -12,8 +13,9 @@ interface LoginViewProps {
     const { setPassword } = usePassword();
 
     const handleUnlock = async (e?: React.FormEvent) => {
-        if (e) e.preventDefault();  // Para evitar que el formulario recargue la página
+        if (e) e.preventDefault();
         try {
+            await invoke<string>("get_vaults", { password: passwordInput });
             setPassword(passwordInput);
             onLoginSuccess();
         } catch (err) {
